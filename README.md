@@ -2,10 +2,13 @@
       
   The Cloud Foundry Integration for Eclipse provides first-class support for the Cloud Foundry
   PaaS: http://www.cloudfoundry.com/. It allows you to directly deploy applications from your
-  workspace to a running Pivotal CF instance, view and manage deployed applications and services,
-  start and stop applications and allows direct debugging when using a Micro Cloud Foundry.
+  workspace to a running Pivotal CF server instance, view and manage deployed applications and services,
+  start and stop applications.
 
 ## Installation (Release)
+
+  Java 7 is now a minimum execution environment requirement to install and run Cloud Foundry Integration for Eclipse.
+  Please make sure your Eclipse or STS is using a Java 7 or higher JRE.
 
 ### when using Eclipse
 
@@ -29,16 +32,11 @@
   (put this URL into the "Install New Software" dialog of your Eclipse)
 
 ### Attention:
-
+  
   Cloud Foundry Integration for Eclipse 1.5.0 and higher, as well as the nightly 
   update site and master development branch, now only support v2 Pivotal CF organizations and spaces. 
   
   V1 support for api.cloudfoundry.com as well as v1 micro and local clouds, is no longer available.
-
-  To continue using an older v1 micro or local Cloud Foundry server, please install Cloud Foundry Integration 
-  for Eclipse 1.4.0 using this update site from within STS/Eclipse's "Help -> Install New Software" menu:
-
-  http://dist.springsource.com/release/TOOLS/cloudfoundry/1.4.0/
 
   The latest Cloud Foundry Integration for Eclipse can be update from within STS/Eclipse starting from 
   version 1.0.0. Updates from prior versions are not supported, and any version of Cloud Foundry Integration for
@@ -52,8 +50,8 @@
 ## Installation (latest from the CI build)
 
   You can always install the latest bits and pieces of the project from the update site that is
-  automatically produced by the continuous integration build. This reflects always the latest
-  development, so you might observe some interesting behavior here and there.
+  automatically produced by the continuous integration build. This always reflects the latest
+  development, so you might observe some interesting behavior here and there, and it is not guaranteed to be stable.
 
   http://dist.springsource.com/snapshot/TOOLS/cloudfoundry/nightly
 
@@ -77,13 +75,13 @@
 ## Questions and bug reports:
 
   If you have a question that Google can't answer, the best way is to go to the Cloud Foundry
-  community forum:
+  community forums:
   
-  https://groups.google.com/a/cloudfoundry.org/forum/#!forum/cf-eclipse
+   [General Cloud Foundry including Cloud Foundry Eclipse](https://groups.google.com/a/cloudfoundry.org/forum/#!forum/vcap-dev)
 
-  or 
+   or 
 
-  http://support.cloudfoundry.com/home
+   [Cloud Foundry Eclipse only](https://groups.google.com/a/cloudfoundry.org/forum/#!forum/cf-eclipse)
 
   There you can also ask questions and search for other people with related or similar problems
   (and solutions). New versions of the Cloud Foundry Integration for Eclipse are announced
@@ -91,12 +89,15 @@
   
   Bugs and issues can be raised here in GitHub:
   
-  https://github.com/SpringSource/eclipse-integration-cloudfoundry/issues
-
-
+  https://github.com/SpringSource/eclipse-integration-cloudfoundry/issues 
+  
+  Watch for upcoming articles on Cloud Foundry by [subscribing](http://blog.cloudfoundry.com/) to the Cloud Foundry blog.
+  
+  Additional support can be found at the [Cloud Foundry support site](http://support.cloudfoundry.com/home).
+  
 ## Working with the code
 
-  If you wanna work on the project itself, the best way is to install the Cloud Foundry integration
+  If you want to work on the project itself, the best way is to install the Cloud Foundry integration
   for Eclipse into your Eclipse target platform and start from there, using the standard Eclipse way
   of plugin development using PDE.
   
@@ -112,10 +113,19 @@
 
 ## Contributing
 
-  Here are some ways for you to get involved in the community:
+  Before we accept any patches or pull requests we will need you to sign our CLA Agreement.
 
-  * Get involved with the community on the community forums.  Please help out on the [forum](http://support.cloudfoundry.com/home) by responding to questions and joining the debate.
-  * Github is for social coding: if you want to write code, we encourage contributions through pull requests from [forks of this repository](http://help.github.com/forking/). 
-  * Watch for upcoming articles on Cloud Foundry by [subscribing](http://blog.cloudfoundry.com/) to the Cloud Foundry blog.
+  1. Please select, sign and submit the appropriate CLA: [individuals](http://www.cloudfoundry.org/individualcontribution.pdf) or [corporations](http://www.cloudfoundry.org/corpcontribution.pdf). 
 
-Before we accept a non-trivial patch or pull request we will need you to sign the [contributor's agreement](https://support.springsource.com/spring_eclipsecla_committer_signup). Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does mean that we can accept your contributions, and you will get an author credit if we do. Active contributors might be asked to join the core team, and given the ability to merge pull requests.
+  2. After submitting the CLA, please [fork this repository](http://help.github.com/forking/).
+
+  3. Set your name and email
+  
+	$ git config --global user.name "Firstname Lastname"
+	
+	$ git config --global user.email "your_email@youremail.com"
+
+  4. Make your changes on a topic branch, commit, and push to github and open a pull request for review by the core team.
+
+  5. Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does
+mean that we can accept your contributions only after being reviewed by the core team, and you will get an author credit if we do. Active contributors might be asked to join the core team, and given the ability to merge pull requests.

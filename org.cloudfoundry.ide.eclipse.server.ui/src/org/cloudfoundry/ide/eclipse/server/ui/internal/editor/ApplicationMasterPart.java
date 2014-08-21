@@ -185,30 +185,24 @@ public class ApplicationMasterPart extends SectionPart {
 			final String jobName = "Deploying application";
 			UIJob job = new UIJob(jobName) {
 								
-				/**
-				 * Get the module name according to the given target element of the structured selection.
-				 * @param targetEle the given target element
-				 * @return the corresponding module name if the given element is instance of 
-				 *     <code>IProject</code> or <code>IJavaProject</code>.
-				 *  
-				 */
-				private String getModuleName(Object targetEle) {
-					String moduleName = null;
-					if (targetEle instanceof IProject) {
-						moduleName = ((IProject)targetEle).getName();
-					} else if (targetEle instanceof IJavaProject) {
-						moduleName = ((IJavaProject)targetEle).getProject().getName();
-					}
-					return moduleName;
-				}
 				
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor) {
 
 					if (data instanceof IStructuredSelection) {
 						Object modObj = ((IStructuredSelection) data).getFirstElement();
-						if (modObj instanceof IProject || modObj instanceof IJavaProject) {
-							final String moduleName = getModuleName(modObj);
+						IProject prj = null;
+						if (modObj instanceof IProject) {
+							prj = (IProject) modObj;
+						}
+						else if (modObj instanceof IJavaProject) {
+							prj = ((IJavaProject) modObj).getProject();
+						}
+
+						if (prj != null) {
+
+							final IProject project = prj;
+
 							final CloudFoundryServer cloudServer = (CloudFoundryServer) editorPage.getServer()
 									.getOriginal().loadAdapter(CloudFoundryServer.class, monitor);
 
@@ -229,7 +223,7 @@ public class ApplicationMasterPart extends SectionPart {
 
 									@Override
 									protected IStatus run(IProgressMonitor monitor) {
-										cloudServer.getBehaviour().publishAdd(moduleName, monitor);
+										cloudServer.getBehaviour().publishAdd(project.getName(), monitor);
 										return Status.OK_STATUS;
 									}
 

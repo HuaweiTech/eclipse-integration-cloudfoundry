@@ -21,6 +21,10 @@ package org.cloudfoundry.ide.eclipse.server.ui.internal.console;
 
 import org.cloudfoundry.ide.eclipse.server.core.internal.log.LogContentType;
 
+/**
+ * Provides console streams for specific {@link LogContentType}.
+ *
+ */
 public abstract class ConsoleStreamProvider {
 
 	abstract public ConsoleStream getStream(LogContentType logType);

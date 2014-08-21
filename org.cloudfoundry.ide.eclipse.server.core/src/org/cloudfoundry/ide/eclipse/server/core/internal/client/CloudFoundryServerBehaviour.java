@@ -1522,8 +1522,8 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 	public static CloudOrgsAndSpaces getCloudSpacesExternalClient(CloudCredentials credentials, final String url,
 			boolean selfSigned, IProgressMonitor monitor) throws CoreException {
 
-		final CloudFoundryOperations operations = CloudFoundryServerBehaviour.createClient(url, credentials.getEmail(),
-				credentials.getPassword(), selfSigned);
+		final CloudFoundryOperations operations = CloudFoundryServerBehaviour.createExternalClientLogin(url,
+				credentials.getEmail(), credentials.getPassword(), selfSigned, monitor);
 
 		return new ClientRequest<CloudOrgsAndSpaces>("Getting orgs and spaces") {
 			@Override
@@ -1602,6 +1602,11 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 
 	public static void validate(final String location, String userName, String password, boolean selfSigned,
 			IProgressMonitor monitor) throws CoreException {
+		createExternalClientLogin(location, userName, password, selfSigned, monitor);
+	}
+
+	public static CloudFoundryOperations createExternalClientLogin(final String location, String userName,
+			String password, boolean selfSigned, IProgressMonitor monitor) throws CoreException {
 		SubMonitor progress = SubMonitor.convert(monitor);
 		progress.beginTask("Connecting", IProgressMonitor.UNKNOWN);
 		try {
@@ -1623,21 +1628,10 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 				}
 
 			}.run(monitor);
+			return client;
 		}
-		catch (RuntimeException e) {
-			// try to guard against IOException in parsing response
-			if (e.getCause() instanceof IOException) {
-				CloudFoundryPlugin
-						.getDefault()
-						.getLog()
-						.log(new Status(IStatus.ERROR, CloudFoundryPlugin.PLUGIN_ID,
-								"Parse error from server response", e.getCause()));
-				throw new CoreException(new Status(IStatus.ERROR, CloudFoundryPlugin.PLUGIN_ID,
-						"Unable to communicate with server"));
-			}
-			else {
-				throw e;
-			}
+		catch (RuntimeException t) {
+			throw CloudErrorUtil.checkServerCommunicationError(t);
 		}
 		finally {
 			progress.done();
@@ -1657,18 +1651,8 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 		}
 		catch (RuntimeException e) {
 			// try to guard against IOException in parsing response
-			if (e.getCause() instanceof IOException) {
-				CloudFoundryPlugin
-						.getDefault()
-						.getLog()
-						.log(new Status(IStatus.ERROR, CloudFoundryPlugin.PLUGIN_ID,
-								"Parse error from server response", e.getCause()));
-				throw new CoreException(new Status(IStatus.ERROR, CloudFoundryPlugin.PLUGIN_ID,
-						"Unable to communicate with server"));
-			}
-			else {
-				throw e;
-			}
+			throw CloudErrorUtil.checkServerCommunicationError(e);
+
 		}
 		finally {
 			progress.done();
@@ -1980,7 +1964,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 				CloudFoundryPlugin.getCallback().stopApplicationConsole(appModule, cloudServer);
 
 				clearAndPrintlnConsole(appModule,
-						NLS.bind(Messages.CONSOLE_PREPARING_APP, appModule.getDeployedApplicationName()), monitor);
+						NLS.bind(Messages.CONSOLE_PREPARING_APP, appModule.getDeployedApplicationName()));
 
 				configuration = prepareForDeployment(appModule, monitor);
 
@@ -2009,7 +1993,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 			}
 			catch (CoreException ce) {
 				// Log the error in console
-				printErrorlnToConsole(appModule, ce.getMessage(), monitor);
+				printErrorlnToConsole(appModule, ce.getMessage());
 				throw ce;
 			}
 
@@ -2141,7 +2125,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 
 				if (!modules[0].isExternal()) {
 
-					printlnToConsole(appModule, Messages.CONSOLE_GENERATING_ARCHIVE, monitor);
+					printlnToConsole(appModule, Messages.CONSOLE_GENERATING_ARCHIVE);
 
 					final ApplicationArchive applicationArchive = generateApplicationArchiveFile(
 							appModule.getDeploymentInfo(), appModule, modules, server, incrementalPublish, monitor);
@@ -2195,7 +2179,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 
 					}.run(monitor);
 
-					printlnToConsole(appModule, Messages.CONSOLE_APP_PUSHED_MESSAGE, monitor);
+					printlnToConsole(appModule, Messages.CONSOLE_APP_PUSHED_MESSAGE);
 
 				}
 
@@ -2264,7 +2248,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 			String appName = appModule.getDeploymentInfo().getDeploymentName();
 
 			try {
-				printlnToConsole(appModule, Messages.CONSOLE_APP_PUSH_MESSAGE, monitor);
+				printlnToConsole(appModule, Messages.CONSOLE_APP_PUSH_MESSAGE);
 				// Now push the application content.
 				if (warFile != null) {
 					client.uploadApplication(appName, warFile);
@@ -2381,18 +2365,17 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 			int moduleState = getServer().getModulePublishState(new IModule[] { appModule.getLocalModule() });
 			if (appModule.isDeployed() && moduleState == IServer.PUBLISH_STATE_NONE) {
 
-				printlnToConsole(appModule, Messages.CONSOLE_APP_FOUND, monitor);
+				printlnToConsole(appModule, Messages.CONSOLE_APP_FOUND);
 
 				CloudApplication cloudApp = null;
 
 				printlnToConsole(appModule,
-						NLS.bind(Messages.CONSOLE_APP_MAPPING_STARTED, appModule.getDeployedApplicationName()), monitor);
+						NLS.bind(Messages.CONSOLE_APP_MAPPING_STARTED, appModule.getDeployedApplicationName()));
 				try {
 					cloudApp = getApplication(appModule.getDeployedApplicationName(), monitor);
 					appModule.setCloudApplication(cloudApp);
 					printlnToConsole(appModule,
-							NLS.bind(Messages.CONSOLE_APP_MAPPING_COMPLETED, appModule.getDeployedApplicationName()),
-							monitor);
+							NLS.bind(Messages.CONSOLE_APP_MAPPING_COMPLETED, appModule.getDeployedApplicationName()));
 
 				}
 				catch (CoreException e) {
@@ -2437,7 +2420,8 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 
 			// Create the application if it doesn't already exist
 			if (!found) {
-				printlnToConsole(appModule, Messages.CONSOLE_APP_CREATION, monitor);
+				
+				printlnToConsole(appModule, Messages.CONSOLE_APP_CREATION);
 
 				Staging staging = appModule.getDeploymentInfo().getStaging();
 				List<String> uris = appModule.getDeploymentInfo().getUris() != null ? appModule.getDeploymentInfo()
@@ -2556,21 +2540,18 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 	 * operation, which will append "..." to the message
 	 * @throws CoreException
 	 */
-	protected void clearAndPrintlnConsole(CloudFoundryApplicationModule appModule, String message,
-			IProgressMonitor monitor) throws CoreException {
+	protected void clearAndPrintlnConsole(CloudFoundryApplicationModule appModule, String message) throws CoreException {
 
 		message += '\n';
 		CloudFoundryPlugin.getCallback().printToConsole(getCloudFoundryServer(), appModule, message, true, false);
 	}
 
-	protected void printlnToConsole(CloudFoundryApplicationModule appModule, String message, IProgressMonitor monitor)
-			throws CoreException {
+	protected void printlnToConsole(CloudFoundryApplicationModule appModule, String message) throws CoreException {
 		message += '\n';
 		CloudFoundryPlugin.getCallback().printToConsole(getCloudFoundryServer(), appModule, message, false, false);
 	}
 
-	protected void printErrorlnToConsole(CloudFoundryApplicationModule appModule, String message,
-			IProgressMonitor monitor) throws CoreException {
+	protected void printErrorlnToConsole(CloudFoundryApplicationModule appModule, String message) throws CoreException {
 		message = NLS.bind(Messages.CONSOLE_ERROR_MESSAGE + '\n', message);
 		CloudFoundryPlugin.getCallback().printToConsole(getCloudFoundryServer(), appModule, message, false, true);
 	}
@@ -2638,9 +2619,10 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 					// logs or refreshing app instance stats after an app has
 					// started).
 
-					printlnToConsole(cloudModule, Messages.CONSOLE_PRE_STAGING_MESSAGE, monitor);
+					printlnToConsole(cloudModule, Messages.CONSOLE_PRE_STAGING_MESSAGE);
 
-					CloudFoundryPlugin.getCallback().startApplicationConsole(getCloudFoundryServer(), cloudModule, 0);
+					CloudFoundryPlugin.getCallback().startApplicationConsole(getCloudFoundryServer(), cloudModule, 0,
+							monitor);
 
 					new BehaviourRequest<Void>(NLS.bind("Starting application {0}", deploymentName)) {
 						@Override
@@ -2791,7 +2773,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 				String stoppingApplicationMessage = NLS.bind(Messages.CONSOLE_STOPPING_APPLICATION,
 						cloudModule.getDeployedApplicationName());
 
-				clearAndPrintlnConsole(cloudModule, stoppingApplicationMessage, monitor);
+				clearAndPrintlnConsole(cloudModule, stoppingApplicationMessage);
 
 				new BehaviourRequest<Void>(stoppingApplicationMessage) {
 					@Override
@@ -2804,7 +2786,7 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 				server.setModuleState(modules, IServer.STATE_STOPPED);
 				succeeded = true;
 
-				printlnToConsole(cloudModule, Messages.CONSOLE_APP_STOPPED, monitor);
+				printlnToConsole(cloudModule, Messages.CONSOLE_APP_STOPPED);
 				CloudFoundryPlugin.getCallback().stopApplicationConsole(cloudModule, cloudServer);
 
 				// If succeeded, stop all Caldecott tunnels if the app is
