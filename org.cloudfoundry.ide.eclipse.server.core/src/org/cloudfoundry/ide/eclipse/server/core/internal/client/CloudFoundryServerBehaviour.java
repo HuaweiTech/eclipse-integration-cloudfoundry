@@ -77,6 +77,7 @@ import org.cloudfoundry.ide.eclipse.server.core.internal.debug.CloudFoundryPrope
 import org.cloudfoundry.ide.eclipse.server.core.internal.debug.DebugModeType;
 import org.cloudfoundry.ide.eclipse.server.core.internal.spaces.CloudFoundrySpace;
 import org.cloudfoundry.ide.eclipse.server.core.internal.spaces.CloudOrgsAndSpaces;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -1346,6 +1347,27 @@ public class CloudFoundryServerBehaviour extends ServerBehaviourDelegate {
 			existModules.add(modules[0]);
 		}
 		return existModules;
+	}
+
+	/**
+	 * Judges whether there exists a module binded with the given project or not.
+	 * 
+	 * @param project the target project to be checked
+	 * @return true if the given project has a binded module, false otherwise
+	 */
+	public boolean existBindedModule(IProject project) {
+		if (null == project) {
+			return false;
+		}
+		List<IModule[]> allModules = getAllModules();
+		for (IModule[] item : allModules) {
+			if (!(item[0] instanceof CloudFoundryApplicationModule)) {
+				if (project.equals(item[0].getProject())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	protected void handlePublishError(CoreException e) {

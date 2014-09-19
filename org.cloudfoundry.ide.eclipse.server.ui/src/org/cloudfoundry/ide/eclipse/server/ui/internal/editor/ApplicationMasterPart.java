@@ -290,6 +290,25 @@ public class ApplicationMasterPart extends SectionPart {
 												if (!confirm[0]) {
 													result[0] = false;
 												} else {
+													// The project which has binded cloud application 
+													// can't be used to replace other unbinded cloud
+													// applications. Otherwise it may cause cloud 
+													// applications be deleted in CF.
+													if (cloudServer.getBehaviour().existBindedModule(selectedProject)) {
+														Display.getDefault().asyncExec(new Runnable() {
+															public void run() {
+																MessageDialog.openInformation(
+																		editorPage.getSite().getShell(),
+																		Messages.NO_NEED_TO_REPLACEMENT_TITLE,
+																		NLS.bind(
+																				"There already exists binded module for the selected project {0}, {1}",
+																				moduleName,
+																				"so it can't be used to replace other unbinded cloud application."));
+															}
+														});
+														result[0] = false;
+														return;
+													}
 													scheduleApplicationReplacement(selectedProject, targetModule);
 												}
 											}
