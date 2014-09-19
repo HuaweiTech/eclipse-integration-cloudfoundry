@@ -93,17 +93,17 @@ public class Messages {
 
 	public static final String REFRESHING_DOMAIN_ROUTES = "Refreshing list of domains and routes";
 
-	public static final String DND_PROJECT_PROCESS_PAGE_TITLE = "Choose the way to process the dragged-and-dropped project";
+	public static final String DND_PROJECT_PROCESS_PAGE_TITLE = "Choose the way of drag-and-drop processing";
 	
-	public static final String DND_PROJECT_PROCESS_PAGE_DESCRIPTION = "Push the project as a new application, or choose a existing cloud application to replace.";
+	public static final String DND_PROJECT_PROCESS_PAGE_DESCRIPTION = "Push the project as a new application, or replace an existing cloud application with it.";
 
 	public static final String PUBLISH_NEW_APPLICATION = "Publish as a new application directly.";
 	
-	public static final String REPLACE_EXISTING_APPLICATION = "Choose an existing unbounded application to replace:";
+	public static final String REPLACE_EXISTING_APPLICATION = "Choose an existing unbound application to replace:";
 	
 	public static final String REFRESHING_APPLICATION = "Refresh the list of applications";
 	
-	public static final String REPLACEMENT_CONFIRMATION_TITLE = "Cloud application replacement confirmation";
+	public static final String REPLACEMENT_CONFIRMATION_TITLE = "Confirm the cloud application replacement";
 
 	public static final String NO_NEED_TO_REPLACEMENT_TITLE = "No need to execute application replacement";
 }
