@@ -83,6 +83,8 @@ public class CloudFoundryImages {
 	public static final ImageDescriptor DEBUG = create(OBJ, "debug_exc.gif");
 
 	public static final ImageDescriptor DEFAULT_WIZARD_BANNER = create(OBJ, "default_wizard_banner.png");
+	
+	public static final ImageDescriptor REPLACE_CLOUD_APP = create(OBJ, "replace.png");
 
 	private static ImageRegistry imageRegistry;
 
