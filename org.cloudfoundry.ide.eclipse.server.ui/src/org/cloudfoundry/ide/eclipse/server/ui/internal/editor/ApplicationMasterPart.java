@@ -259,50 +259,52 @@ public class ApplicationMasterPart extends SectionPart {
 								// and the logical whether needs to continue or not.
 								result[1] = false;
 								
-								Display.getDefault().syncExec(new Runnable() {
+								if (!cloudServer.getBehaviour().existBindedModule(selectedProject)) {
+									Display.getDefault().syncExec(new Runnable() {
 
-									public void run() {
-										DragAndDrogProjectProcessChoiceWizard choiceWizard = 
-										    new DragAndDrogProjectProcessChoiceWizard(cloudServer);
-										WizardDialog dialog = new WizardDialog(editorPage.getEditorSite().getShell(), choiceWizard);
-										if (Window.OK == dialog.open()) {
-											result[0] = true;
-											if (choiceWizard.choosePublish()) {
-												result[1] = true;
-											} else {
-												final boolean[] confirm = new boolean[1];
-												CloudFoundryApplicationModule targetModule = choiceWizard.getReplacedApplication();
-												final String replaceAppName = targetModule.getName();
-			
-												// The replacement can't be pulled back, so
-												// given user a confirmation.
-												Display.getDefault().syncExec(new Runnable() {
-													public void run() {
-														confirm[0] = MessageDialog.openConfirm(
-																editorPage.getSite().getShell(),
-																Messages.REPLACEMENT_CONFIRMATION_TITLE,
-																NLS.bind(
-																		"Are you sure to use the contents of project {0} to replace the cloud application {1} ?",
-																		moduleName,
-																		replaceAppName));
-													}
-												});
-												if (!confirm[0]) {
-													result[0] = false;
+										public void run() {
+											DragAndDrogProjectProcessChoiceWizard choiceWizard = 
+											    new DragAndDrogProjectProcessChoiceWizard(cloudServer);
+											WizardDialog dialog = new WizardDialog(editorPage.getEditorSite().getShell(), choiceWizard);
+											if (Window.OK == dialog.open()) {
+												result[0] = true;
+												if (choiceWizard.choosePublish()) {
+													result[1] = true;
 												} else {
-													scheduleApplicationReplacement(selectedProject, targetModule);
+													final boolean[] confirm = new boolean[1];
+													CloudFoundryApplicationModule targetModule = choiceWizard.getReplacedApplication();
+													final String replaceAppName = targetModule.getName();
+													
+													// The replacement can't be pulled back, so
+													// given user a confirmation.
+													Display.getDefault().syncExec(new Runnable() {
+														public void run() {
+															confirm[0] = MessageDialog.openConfirm(
+																	editorPage.getSite().getShell(),
+																	Messages.REPLACEMENT_CONFIRMATION_TITLE,
+																	NLS.bind(
+																			"Are you sure to use the contents of project {0} to replace the cloud application {1} ?",
+																			moduleName,
+																			replaceAppName));
+														}
+													});
+													if (!confirm[0]) {
+														result[0] = false;
+													} else {
+														scheduleApplicationReplacement(selectedProject, targetModule);
+													}
 												}
 											}
 										}
-									}
 
-								});
-								if (!result[0]) {
-									return Status.CANCEL_STATUS;
-								} else if (!result[1]) {
-									// It indicates the user choose to replace an existing application,
-									// and the corresponding operation is executing in background job
-									return Status.OK_STATUS;
+									});
+									if (!result[0]) {
+										return Status.CANCEL_STATUS;
+									} else if (!result[1]) {
+										// It indicates the user choose to replace an existing application,
+										// and the corresponding operation is executing in background job
+										return Status.OK_STATUS;
+									}
 								}
 								
 								// Secondly, it should make sure there is no
