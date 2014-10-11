@@ -33,6 +33,7 @@ import org.cloudfoundry.ide.eclipse.server.ui.internal.CloudFoundryImages;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.Messages;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.actions.DeleteServicesAction;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.actions.RefreshApplicationEditorAction;
+import org.cloudfoundry.ide.eclipse.server.ui.internal.actions.RemoveCloudApplicationAction;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.actions.ServiceToApplicationsBindingAction;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.wizards.CloudFoundryServiceWizard;
 import org.cloudfoundry.ide.eclipse.server.ui.internal.wizards.CloudRoutesWizard;
@@ -619,7 +620,7 @@ public class ApplicationMasterPart extends SectionPart {
 
 		IModule module = (IModule) selection.getFirstElement();
 		if (module != null) {
-			manager.add(new RemoveModuleAction(getSection().getShell(), editorPage.getServer().getOriginal(), module));
+			manager.add(new RemoveCloudApplicationAction(getSection().getShell(), editorPage.getServer().getOriginal(), module));
 		}
 	}
 
